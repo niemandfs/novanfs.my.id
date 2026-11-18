@@ -1,0 +1,31 @@
+# Nama pipeline, muncul di tab Actions
+name: CI
+
+# Kapan pipeline jalan
+on:
+  # Setiap ada Pull Request
+  pull_request:
+  # Setiap ada push ke branch main
+  push:
+    branches: [main]
+
+jobs:
+  # Nama job: cek file HTML
+  lint-html:
+    # Jalan di "komputer pinjaman" GitHub dengan Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      # Ambil kode dari repo ke komputer pinjaman
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Pasang Node.js, karena tool pengecek HTML-nya berbasis Node
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # Jalankan HTMLHint buat ngecek semua file .html
+      # Kalau ada kesalahan, step ini gagal dan pipeline jadi merah
+      - name: Lint HTML
+        run: npx --yes htmlhint "**/*.html"
