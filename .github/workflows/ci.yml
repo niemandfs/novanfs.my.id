@@ -29,3 +29,22 @@ jobs:
       # Kalau ada kesalahan, step ini gagal dan pipeline jadi merah
       - name: Lint HTML
         run: npx --yes htmlhint "**/*.html"
+  
+  # Job kedua: cari password, token, atau key yang ke-commit
+  secret-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Ambil seluruh riwayat commit, bukan cuma yang terakhir,
+      # biar rahasia yang pernah ke-commit di masa lalu juga ketemu
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Jalankan Gitleaks. Kalau nemu rahasia, step ini gagal
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          # Token bawaan GitHub, otomatis tersedia, nggak perlu dibikin
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
