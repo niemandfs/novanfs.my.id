@@ -25,6 +25,12 @@ export default function Navbar({ theme, onToggleTheme }) {
               </a>
             </li>
           ))}
+          {/* Link Contact khusus menu HP, karena tombol Contact disembunyikan di layar kecil */}
+          <li className="nav-contact-mobile">
+            <a href="#contact" onClick={() => setOpen(false)}>
+              Contact
+            </a>
+          </li>
         </ul>
 
         <div className="nav-actions">

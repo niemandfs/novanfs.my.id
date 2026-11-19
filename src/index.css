@@ -232,6 +232,11 @@ h3 {
   display: none;
 }
 
+/* Link Contact di menu cuma tampil di HP */
+.nav-contact-mobile {
+  display: none;
+}
+
 /* Hero (bagian pembuka) */
 .hero {
   position: relative;
@@ -877,6 +882,11 @@ h3 {
 
   .nav-hire {
     display: none;
+  }
+
+    /* Di HP, Contact pindah ke dalam menu */
+  .nav-contact-mobile {
+    display: list-item;
   }
 
   .scroll-hint {
