@@ -38,7 +38,13 @@
 
 html {
   /* Scroll halus diatur lewat JavaScript di App.jsx supaya kecepatannya bisa disetel */
-  scroll-padding-top: 96px;
+}
+
+/* Di layar laptop/desktop: scroll otomatis "berhenti" pas di awal tiap bagian */
+@media (min-width: 761px) {
+  html {
+    scroll-snap-type: y proximity;
+  }
 }
 
 body {
@@ -241,6 +247,7 @@ h3 {
 .hero {
   position: relative;
   min-height: 100vh;
+  scroll-snap-align: start;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -347,11 +354,17 @@ h3 {
   background: var(--muted);
 }
 
-/* Struktur umum tiap bagian */
+/* Struktur umum tiap bagian: minimal setinggi layar, isinya di tengah secara vertikal */
 .section {
   max-width: 1080px;
   margin: 0 auto;
-  padding: 110px 24px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Jarak atas lebih besar supaya isi tidak ketutup navbar */
+  padding: 120px 24px 80px;
+  scroll-snap-align: start;
 }
 
 .section-heading {
@@ -720,6 +733,8 @@ h3 {
   grid-template-columns: 1.2fr 1fr;
   gap: 48px;
   align-items: center;
+  /* Bagian kontak pakai grid, jadi isinya ditengahkan dengan cara ini */
+  align-content: center;
 }
 
 .contact-title {
@@ -884,7 +899,7 @@ h3 {
     display: none;
   }
 
-    /* Di HP, Contact pindah ke dalam menu */
+  /* Di HP, Contact pindah ke dalam menu */
   .nav-contact-mobile {
     display: list-item;
   }
@@ -894,7 +909,7 @@ h3 {
   }
 
   .section {
-    padding: 80px 20px;
+    padding: 100px 20px 64px;
   }
 
   .cap-cards,
