@@ -37,8 +37,7 @@
 }
 
 html {
-  scroll-behavior: smooth;
-  /* Jarak saat lompat ke bagian, biar judul tidak ketutup navbar */
+  /* Scroll halus diatur lewat JavaScript di App.jsx supaya kecepatannya bisa disetel */
   scroll-padding-top: 96px;
 }
 
@@ -917,10 +916,6 @@ h3 {
 
 /* Matikan animasi kalau pengunjung memilih "kurangi animasi" */
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
   .cursor {
     animation: none;
   }
