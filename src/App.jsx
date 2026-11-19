@@ -14,6 +14,33 @@ import { profile } from './data.js'
 // Tahun sekarang untuk footer, dihitung sekali saat file dimuat
 const year = new Date().getFullYear()
 
+// Durasi scroll waktu klik menu (milidetik). Besarkan angkanya kalau mau lebih pelan
+const SCROLL_DURATION = 1100
+
+// Jarak dari atas layar saat berhenti, biar judul bagian tidak ketutup navbar
+const SCROLL_OFFSET = 96
+
+// Kurva gerak: pelan di awal, cepat di tengah, pelan lagi di akhir
+function easeInOutCubic(t) {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+}
+
+// Scroll halus ke posisi tujuan dengan durasi tertentu
+function smoothScrollTo(targetY) {
+  const startY = window.scrollY
+  const distance = targetY - startY
+  const startTime = performance.now()
+
+  function step(now) {
+    // Seberapa jauh waktu sudah berjalan, dari 0 sampai 1
+    const progress = Math.min((now - startTime) / SCROLL_DURATION, 1)
+    window.scrollTo(0, startY + distance * easeInOutCubic(progress))
+    if (progress < 1) requestAnimationFrame(step)
+  }
+
+  requestAnimationFrame(step)
+}
+
 // Baca tema yang terakhir dipilih pengunjung (kalau ada), default gelap
 function getInitialTheme() {
   try {
@@ -37,6 +64,35 @@ export default function App() {
       // Penyimpanan browser tidak tersedia, abaikan
     }
   }, [theme])
+
+  // Tangkap semua klik link "#bagian" (menu, tombol, logo) dan pakai scroll pelan buatan sendiri
+  useEffect(() => {
+    const onClick = (event) => {
+      const link = event.target.closest('a[href^="#"]')
+      if (!link) return
+
+      const id = link.getAttribute('href').slice(1)
+      const target = id === 'top' ? document.body : document.getElementById(id)
+      if (!target) return
+
+      event.preventDefault()
+
+      // Posisi tujuan: atas halaman untuk #top, selain itu posisi bagian dikurangi tinggi navbar
+      const targetY =
+        id === 'top' ? 0 : target.getBoundingClientRect().top + window.scrollY - SCROLL_OFFSET
+
+      // Kalau pengunjung memilih "kurangi animasi", langsung lompat tanpa animasi
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      if (reduce) window.scrollTo(0, targetY)
+      else smoothScrollTo(targetY)
+
+      // Perbarui alamat di browser (misal novanfs.my.id/#work) tanpa lompat
+      history.pushState(null, '', `#${id}`)
+    }
+
+    document.addEventListener('click', onClick)
+    return () => document.removeEventListener('click', onClick)
+  }, [])
 
   // Pantau posisi scroll untuk tombol "kembali ke atas"
   useEffect(() => {
