@@ -10,33 +10,41 @@ on:
     branches: [main]
 
 jobs:
-  # Nama job: cek file HTML
-  lint-html:
-    # Jalan di "komputer pinjaman" GitHub dengan Ubuntu
+  # Job pertama: cek kode dan pastikan website bisa di-build
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      # Ambil kode dari repo ke komputer pinjaman
+      # Ambil kode dari repo
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Pasang Node.js, karena tool pengecek HTML-nya berbasis Node
+      # Pasang Node.js sesuai versi di file .nvmrc,
+      # dan simpan cache dependency biar run berikutnya lebih cepat
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version-file: .nvmrc
+          cache: npm
 
-      # Jalankan HTMLHint buat ngecek semua file .html
-      # Kalau ada kesalahan, step ini gagal dan pipeline jadi merah
-      - name: Lint HTML
-        run: npx --yes htmlhint "**/*.html"
-  
+      # Install dependency persis sesuai package-lock.json
+      - name: Install dependencies
+        run: npm ci
+
+      # Cek kesalahan umum di kode JavaScript/React
+      - name: Lint
+        run: npm run lint
+
+      # Build website. Kalau gagal di sini, berarti Cloudflare juga bakal gagal
+      - name: Build
+        run: npm run build
+
   # Job kedua: cari password, token, atau key yang ke-commit
   secret-scan:
     runs-on: ubuntu-latest
 
     steps:
-      # Ambil seluruh riwayat commit, bukan cuma yang terakhir,
-      # biar rahasia yang pernah ke-commit di masa lalu juga ketemu
+      # Ambil seluruh riwayat commit, biar rahasia di commit lama juga ketemu
       - name: Checkout code
         uses: actions/checkout@v4
         with:
@@ -46,5 +54,4 @@ jobs:
       - name: Run Gitleaks
         uses: gitleaks/gitleaks-action@v2
         env:
-          # Token bawaan GitHub, otomatis tersedia, nggak perlu dibikin
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

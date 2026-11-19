@@ -1,13 +1,24 @@
 # novanfs.my.id
 
-Personal portfolio site. Static HTML and CSS, hosted on Cloudflare Pages.
+Personal portfolio site. React + Vite, hosted on Cloudflare Pages.
 
 ## How it works
 
 - Code lives in this repo. `main` is the production branch.
-- Every pull request runs CI (GitHub Actions): HTML lint (HTMLHint) and secret scan (Gitleaks).
+- All site content is in `src/data.js`.
+- Every pull request runs CI (GitHub Actions): `npm ci`, lint, build, and a secret scan (Gitleaks).
 - `main` is protected: changes go through a pull request, and the required checks must pass before merge.
 - Cloudflare Pages builds a preview for every pull request (staging) and deploys `main` to production.
+- Cloudflare Pages build settings: build command `npm run build`, output directory `dist`, Node version from `.nvmrc`.
+
+## Run locally
+
+```bash
+npm ci
+npm run dev      # dev server at http://localhost:5173
+npm run lint
+npm run build    # output in dist/
+```
 
 ## Deploy
 
