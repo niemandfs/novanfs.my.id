@@ -17,8 +17,8 @@ const year = new Date().getFullYear()
 // Durasi scroll waktu klik menu (milidetik). Besarkan angkanya kalau mau lebih pelan
 const SCROLL_DURATION = 1100
 
-// Jarak dari atas layar saat berhenti, biar judul bagian tidak ketutup navbar
-const SCROLL_OFFSET = 96
+// Jarak dari atas layar saat berhenti. 0 karena tiap bagian sudah punya jarak atas sendiri
+const SCROLL_OFFSET = 0
 
 // Kurva gerak: pelan di awal, cepat di tengah, pelan lagi di akhir
 function easeInOutCubic(t) {
@@ -30,12 +30,18 @@ function smoothScrollTo(targetY) {
   const startY = window.scrollY
   const distance = targetY - startY
   const startTime = performance.now()
+  const root = document.documentElement
+
+  // Matikan "berhenti otomatis" (scroll snap) selama animasi, biar geraknya tidak tersendat
+  root.style.scrollSnapType = 'none'
 
   function step(now) {
     // Seberapa jauh waktu sudah berjalan, dari 0 sampai 1
     const progress = Math.min((now - startTime) / SCROLL_DURATION, 1)
     window.scrollTo(0, startY + distance * easeInOutCubic(progress))
     if (progress < 1) requestAnimationFrame(step)
+    // Animasi selesai: nyalakan lagi scroll snap
+    else root.style.scrollSnapType = ''
   }
 
   requestAnimationFrame(step)
